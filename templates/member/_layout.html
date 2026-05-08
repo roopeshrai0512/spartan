@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="px-4 mb-3">
+      <div class="text-spartan small text-uppercase fw-bold" style="letter-spacing:3px">Spartan Member</div>
+      <div class="fw-bold mt-1">{{ user.display_name }}</div>
+    </div>
+    <h6>My Spartan Life</h6>
+    <a href="{% url 'core:my_membership' %}"><i class="bi bi-shield-check"></i> Membership</a>
+    <a href="{% url 'core:my_classes' %}"><i class="bi bi-activity"></i> Classes</a>
+    <a href="{% url 'core:my_attendance' %}"><i class="bi bi-clipboard-check"></i> Attendance</a>
+    <a href="{% url 'core:my_progress' %}"><i class="bi bi-graph-up-arrow"></i> Progress</a>
+    <a href="{% url 'core:submit_testimonial' %}"><i class="bi bi-chat-quote"></i> Share Story</a>
+    <h6>Account</h6>
+    <a href="{% url 'accounts:profile' %}"><i class="bi bi-person"></i> Profile</a>
+    <form action="{% url 'accounts:logout' %}" method="post" class="m-0 px-3 mt-2">
+      {% csrf_token %}
+      <button class="btn btn-ghost btn-sm w-100"><i class="bi bi-box-arrow-right"></i> Log out</button>
+    </form>
+  </aside>
+  <div class="dash-content">
+    {% block dash %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

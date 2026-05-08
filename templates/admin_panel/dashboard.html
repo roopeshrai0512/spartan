@@ -1,0 +1,208 @@
+{% extends "admin_panel/_layout.html" %}
+{% load humanize %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block dash %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h2 class="mb-1">Command Center</h2>
+    <p class="text-muted mb-0">Mission control for Spartan Gym.</p>
+  </div>
+  <div class="d-flex gap-2">
+    {% if user.is_super_admin or user.can_add_member %}
+      <a href="{% url 'core:member_add' %}" class="btn btn-spartan btn-sm"><i class="bi bi-person-plus"></i> Add Member</a>
+    {% endif %}
+    <a href="{% url 'core:admin_check_in' %}" class="btn btn-ghost btn-sm"><i class="bi bi-door-open"></i> Check-In</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-3">
+    <div class="kpi-card" style="--accent:#c8102e;">
+      <div class="kpi-icon"><i class="bi bi-people-fill"></i></div>
+      <div class="kpi-label">Total Members</div>
+      <div class="kpi-value">{{ member_count }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="kpi-card" style="--accent:#22c55e;">
+      <div class="kpi-icon" style="background:rgba(34,197,94,0.15);color:#4ade80;"><i class="bi bi-shield-check"></i></div>
+      <div class="kpi-label">Active Memberships</div>
+      <div class="kpi-value">{{ active_memberships }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="kpi-card" style="--accent:#ffb24c;">
+      <div class="kpi-icon" style="background:rgba(255,178,76,0.15);color:#ffb24c;"><i class="bi bi-door-open-fill"></i></div>
+      <div class="kpi-label">Today's Check-ins</div>
+      <div class="kpi-value">{{ todays_attendance }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="kpi-card" style="--accent:#38bdf8;">
+      <div class="kpi-icon" style="background:rgba(56,189,248,0.15);color:#7dd3fc;"><i class="bi bi-cash-stack"></i></div>
+      <div class="kpi-label">Revenue (This Month)</div>
+      <div class="kpi-value">${{ revenue_month|floatformat:0|intcomma }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="spartan-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Revenue — Last 7 Days</h5>
+        <span class="text-muted small">All-time: ${{ revenue_total|floatformat:0|intcomma }}</span>
+      </div>
+      <canvas id="revChart" height="100"></canvas>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="spartan-card h-100">
+      <h5 class="mb-3">Active Members by Plan</h5>
+      <canvas id="planChart" height="240"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <div class="col-lg-6">
+    <div class="spartan-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"><i class="bi bi-hourglass-split text-spartan"></i> Memberships Expiring Soon</h5>
+        <a class="small text-muted" href="{% url 'core:membership_list' %}">View all</a>
+      </div>
+      {% if expiring_soon %}
+        <div class="dash-table-wrap">
+          <table class="dash-table">
+            <thead><tr><th>Member</th><th>Plan</th><th>Ends</th></tr></thead>
+            <tbody>
+              {% for m in expiring_soon %}
+                <tr>
+                  <td>{{ m.member.display_name }}</td>
+                  <td>{{ m.plan.name }}</td>
+                  <td><span class="status-badge status-pending">{{ m.end_date }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state"><i class="bi bi-check2-circle"></i><div>No expirations in the next week.</div></div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="spartan-card">
+      <h5 class="mb-3"><i class="bi bi-bell text-spartan"></i> Pending Items</h5>
+      <div class="row g-3">
+        <div class="col-6">
+          <a href="{% url 'core:message_list' %}" class="d-block kpi-card" style="--accent:#fbbf24; text-decoration:none;">
+            <div class="kpi-label">Unread Messages</div>
+            <div class="kpi-value">{{ pending_messages }}</div>
+          </a>
+        </div>
+        <div class="col-6">
+          <a href="{% url 'core:testimonial_list' %}" class="d-block kpi-card" style="--accent:#c79049; text-decoration:none;">
+            <div class="kpi-label">Pending Testimonials</div>
+            <div class="kpi-value">{{ pending_testimonials }}</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <div class="col-lg-6">
+    <div class="spartan-card">
+      <h5 class="mb-3">Recent Members</h5>
+      <div class="dash-table-wrap">
+        <table class="dash-table">
+          <thead><tr><th>Member</th><th>Joined</th><th></th></tr></thead>
+          <tbody>
+            {% for m in recent_members %}
+              <tr>
+                <td>{{ m.display_name }}</td>
+                <td>{{ m.date_joined|date:"M d" }}</td>
+                <td><a href="{% url 'core:member_detail' m.pk %}" class="btn btn-sm btn-ghost">View</a></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="3" class="text-center text-muted">No members yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="spartan-card">
+      <h5 class="mb-3">Recent Payments</h5>
+      <div class="dash-table-wrap">
+        <table class="dash-table">
+          <thead><tr><th>Member</th><th>Amount</th><th>When</th></tr></thead>
+          <tbody>
+            {% for p in recent_payments %}
+              <tr>
+                <td>{{ p.member.display_name }}</td>
+                <td><strong>${{ p.amount }}</strong></td>
+                <td>{{ p.paid_on|date:"M d H:i" }}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="3" class="text-center text-muted">No payments recorded.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const revCtx = document.getElementById('revChart').getContext('2d');
+const grad = revCtx.createLinearGradient(0, 0, 0, 250);
+grad.addColorStop(0, 'rgba(200,16,46,0.55)');
+grad.addColorStop(1, 'rgba(200,16,46,0.02)');
+new Chart(revCtx, {
+  type: 'line',
+  data: {
+    labels: {{ chart_labels|safe }},
+    datasets: [{
+      label: 'Revenue $',
+      data: {{ chart_data|safe }},
+      borderColor: '#c8102e',
+      backgroundColor: grad,
+      fill: true,
+      tension: 0.35,
+      pointRadius: 4,
+      pointBackgroundColor: '#c8102e',
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9aa0ad' }},
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9aa0ad' }}
+    }
+  }
+});
+
+const planLabels = {{ plan_breakdown|safe }}.map(x => x.plan__name);
+const planData = {{ plan_breakdown|safe }}.map(x => x.c);
+new Chart(document.getElementById('planChart').getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    labels: planLabels,
+    datasets: [{
+      data: planData,
+      backgroundColor: ['#c8102e', '#ffb24c', '#7dd3fc', '#4ade80', '#c79049', '#a78bfa']
+    }]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom', labels: { color: '#aab', boxWidth: 14 } } }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<h2 class="mb-4">{{ title }}</h2>
+<div class="spartan-card">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-3">
+      {% for field in form %}
+        <div class="col-md-6">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="d-flex gap-2 mt-4">
+      <button class="btn btn-spartan">Save</button>
+      <a href="{% url 'core:member_list' %}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1>About {{ site.gym_name }}</h1>
+    <p>{{ site.tagline }}</p>
+  </div>
+</section>
+
+<section class="spartan-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <span class="section-eyebrow">Our Story</span>
+        <h2 class="section-title">Where ordinary becomes legend</h2>
+        <p class="text-white-50">{{ site.about }}</p>
+        <p class="text-white-50">From competitive lifters to weekend warriors and everyone in between — every Spartan is welcomed, challenged, and forged into a stronger version of themselves.</p>
+        <div class="row g-3 mt-3">
+          <div class="col-6">
+            <div class="spartan-card">
+              <i class="bi bi-trophy-fill text-spartan fs-3"></i>
+              <h5 class="mt-2 mb-1">5+ Years</h5>
+              <small class="text-muted">Building champions</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="spartan-card">
+              <i class="bi bi-heart-pulse-fill text-spartan fs-3"></i>
+              <h5 class="mt-2 mb-1">24/7 Access</h5>
+              <small class="text-muted">Train your way</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80" class="img-fluid rounded-3 shadow-lg" alt="Inside Spartan Gym">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spartan-section" style="background: var(--spartan-panel);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow">Meet the Coaches</span>
+      <h2 class="section-title">Our Trainers</h2>
+    </div>
+    <div class="row g-4">
+      {% for t in trainers %}
+        <div class="col-md-6 col-lg-3">
+          <div class="trainer-card">
+            <div class="trainer-photo" {% if t.photo %}style="background-image:url('{{ t.photo.url }}')"{% endif %}></div>
+            <div class="trainer-body">
+              <div class="trainer-name">{{ t.name }}</div>
+              <div class="trainer-title">{{ t.title }}</div>
+              <div class="trainer-spec">{{ t.specialty }}</div>
+              <p class="text-white-50 small mt-2 mb-0">{{ t.bio|truncatewords:20 }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

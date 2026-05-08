@@ -1,0 +1,67 @@
+{% extends "member/_layout.html" %}
+{% block dash %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">My Progress</h2>
+  <a href="{% url 'core:add_progress' %}" class="btn btn-spartan"><i class="bi bi-plus-circle"></i> Log Today</a>
+</div>
+
+{% if logs %}
+<div class="row g-3 mb-4">
+  <div class="col-md-8">
+    <div class="spartan-card">
+      <h5 class="mb-3">Weight Trend</h5>
+      <canvas id="weightChart" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="spartan-card h-100">
+      <h5 class="mb-3">Latest BMI</h5>
+      <div class="kpi-value text-spartan">{{ logs.0.bmi }}</div>
+      <div class="text-muted small">As of {{ logs.0.logged_on }}</div>
+      <div class="divider-line"></div>
+      <div class="small text-muted">Latest weight: <strong class="text-white">{{ logs.0.weight_kg }} kg</strong></div>
+      <div class="small text-muted">Height: <strong class="text-white">{{ logs.0.height_cm }} cm</strong></div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead><tr><th>Date</th><th>Weight</th><th>Height</th><th>BMI</th><th>Body Fat</th><th>Note</th></tr></thead>
+    <tbody>
+      {% for l in logs %}
+        <tr><td>{{ l.logged_on }}</td><td>{{ l.weight_kg }} kg</td><td>{{ l.height_cm }} cm</td>
+            <td><strong>{{ l.bmi }}</strong></td><td>{{ l.body_fat|default:"—" }}%</td>
+            <td class="text-muted small">{{ l.note }}</td></tr>
+      {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-graph-up"></i>Log your first measurement to start tracking.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if logs %}
+<script>
+new Chart(document.getElementById('weightChart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: {{ chart_labels|safe }},
+    datasets: [
+      { label: 'Weight (kg)', data: {{ chart_weight|safe }}, borderColor: '#c8102e', backgroundColor: 'rgba(200,16,46,0.2)', fill: true, tension: 0.35 },
+      { label: 'BMI', data: {{ chart_bmi|safe }}, borderColor: '#ffb24c', tension: 0.35 }
+    ]
+  },
+  options: {
+    plugins: { legend: { labels: { color: '#aab' } } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9aa0ad' } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9aa0ad' } }
+    }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

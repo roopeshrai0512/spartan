@@ -1,0 +1,21 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<h2 class="mb-4">Front-Desk Check-In</h2>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="auth-card">
+      <p class="text-muted">Select a member to log their check-in instantly.</p>
+      <form method="post">
+        {% csrf_token %}
+        <select name="member_id" class="form-select form-select-lg mb-3" required>
+          <option value="">— Pick a member —</option>
+          {% for m in members %}
+            <option value="{{ m.id }}">{{ m.display_name }} (@{{ m.username }})</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-spartan w-100"><i class="bi bi-check-circle"></i> Check In</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

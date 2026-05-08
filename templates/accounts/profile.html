@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1>My Profile</h1>
+    <p>Update your personal info, photo, and contact details.</p>
+  </div>
+</section>
+
+<section class="spartan-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="auth-card">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+              {% for field in form %}
+                <div class="col-md-6">
+                  <label class="form-label">{{ field.label }}</label>
+                  {{ field }}
+                </div>
+              {% endfor %}
+            </div>
+            <button class="btn btn-spartan mt-4">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

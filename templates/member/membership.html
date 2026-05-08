@@ -1,0 +1,88 @@
+{% extends "member/_layout.html" %}
+{% load humanize %}
+{% block dash %}
+<h2 class="mb-4">My Membership</h2>
+
+{% if active and active.is_active_now %}
+  <div class="spartan-card mb-4" style="background: linear-gradient(135deg, rgba(200,16,46,0.18), rgba(20,21,26,0.95)); border-color: var(--spartan-red);">
+    <div class="row align-items-center">
+      <div class="col-md-7">
+        <div class="text-spartan small text-uppercase fw-bold" style="letter-spacing:3px">Currently Active</div>
+        <h2 class="mt-2">{{ active.plan.name }}</h2>
+        <p class="text-white-50 mb-3">{{ active.plan.get_tier_display }} · ${{ active.plan.price }}</p>
+        <div class="d-flex gap-3 flex-wrap">
+          <div><div class="small text-muted">Started</div><div class="fw-bold">{{ active.start_date }}</div></div>
+          <div><div class="small text-muted">Renews</div><div class="fw-bold">{{ active.end_date }}</div></div>
+          <div><div class="small text-muted">Days Remaining</div><div class="fw-bold text-spartan">{{ active.days_remaining }}</div></div>
+        </div>
+      </div>
+      <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'core:check_in' %}" class="btn btn-spartan"><i class="bi bi-door-open"></i> Quick Check-in</a>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="spartan-card mb-4 text-center">
+    <i class="bi bi-shield-exclamation text-spartan" style="font-size:48px"></i>
+    <h4 class="mt-2">No active membership</h4>
+    <p class="text-muted">Pick a plan below to start training today.</p>
+  </div>
+{% endif %}
+
+<h4 class="mt-5 mb-3">Choose Your Plan</h4>
+<div class="row g-3">
+  {% for p in plans %}
+    <div class="col-md-6 col-lg-4">
+      <div class="plan-card {% if p.is_featured %}featured{% endif %}" style="--accent: {{ p.color }};">
+        {% if p.is_featured %}<span class="plan-badge">Popular</span>{% endif %}
+        <i class="bi {{ p.icon }} plan-icon"></i>
+        <div class="plan-name">{{ p.name }}</div>
+        <div class="plan-tier">{{ p.get_tier_display }}</div>
+        <div class="plan-price"><span class="currency">$</span>{{ p.price|floatformat:0 }}<span class="period"> / {{ p.duration_days }}d</span></div>
+        <ul class="plan-features">
+          {% for f in p.feature_list|slice:":5" %}<li><i class="bi bi-check-circle-fill"></i> {{ f }}</li>{% endfor %}
+        </ul>
+        <a href="{% url 'core:subscribe' p.id %}" class="btn btn-spartan w-100 mt-3">Subscribe</a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<h4 class="mt-5 mb-3">Membership History</h4>
+<div class="dash-table-wrap mb-4">
+  <table class="dash-table">
+    <thead><tr><th>Plan</th><th>Start</th><th>End</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for m in history %}
+        <tr>
+          <td>{{ m.plan.name }}</td>
+          <td>{{ m.start_date }}</td>
+          <td>{{ m.end_date }}</td>
+          <td><span class="status-badge status-{{ m.status }}">{{ m.get_status_display }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="text-center text-muted">No history yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h4 class="mb-3">Recent Payments</h4>
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead><tr><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+        <tr>
+          <td><strong>${{ p.amount }}</strong></td>
+          <td>{{ p.get_method_display }}</td>
+          <td><span class="status-badge status-{{ p.status }}">{{ p.get_status_display }}</span></td>
+          <td>{{ p.paid_on|date:"M d, Y" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="text-center text-muted">No payments yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

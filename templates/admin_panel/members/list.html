@@ -1,0 +1,72 @@
+{% extends "admin_panel/_layout.html" %}
+{% block title %}Members{% endblock %}
+{% block dash %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h2 class="mb-1">Members</h2>
+    <p class="text-muted mb-0">Search, manage, and review member accounts.</p>
+  </div>
+  {% if user.is_super_admin or user.can_add_member %}
+    <a href="{% url 'core:member_add' %}" class="btn btn-spartan"><i class="bi bi-person-plus"></i> Add Member</a>
+  {% endif %}
+</div>
+
+<form method="get" class="mb-3">
+  <div class="input-group">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search members…">
+    <button class="btn btn-spartan"><i class="bi bi-search"></i></button>
+  </div>
+</form>
+
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Joined</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              {% if m.avatar %}
+                <img src="{{ m.avatar.url }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover">
+              {% else %}
+                <span class="avatar-initial">{{ m.display_name|first|upper }}</span>
+              {% endif %}
+              <div>
+                <div class="fw-bold">{{ m.display_name }}</div>
+                <div class="small text-muted">@{{ m.username }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ m.email|default:"—" }}</td>
+          <td>{{ m.phone|default:"—" }}</td>
+          <td>{{ m.date_joined|date:"M d, Y" }}</td>
+          <td>
+            {% if m.is_active %}<span class="status-badge status-active">Active</span>
+            {% else %}<span class="status-badge status-cancelled">Disabled</span>{% endif %}
+          </td>
+          <td class="text-end">
+            <a href="{% url 'core:member_detail' m.pk %}" class="btn btn-sm btn-ghost"><i class="bi bi-eye"></i></a>
+            {% if user.is_super_admin or user.can_edit_member %}
+              <a href="{% url 'core:member_edit' m.pk %}" class="btn btn-sm btn-ghost"><i class="bi bi-pencil"></i></a>
+            {% endif %}
+            {% if user.is_super_admin or user.can_delete_member %}
+              <a href="{% url 'core:member_delete' m.pk %}" class="btn btn-sm btn-ghost text-danger"><i class="bi bi-trash"></i></a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-people"></i>No members found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "member/_layout.html" %}
+{% block dash %}
+<h2 class="mb-4">Share Your Spartan Story</h2>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="auth-card">
+      <p class="text-muted">Inspire other members with your journey. Your story will be reviewed before publishing.</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3"><label class="form-label">Your Story</label>{{ form.quote }}</div>
+        <div class="mb-3"><label class="form-label">Rating (1-5)</label>{{ form.rating }}</div>
+        <button class="btn btn-spartan">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

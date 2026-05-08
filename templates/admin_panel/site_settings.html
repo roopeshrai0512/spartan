@@ -1,0 +1,15 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<h2 class="mb-4">Site Settings</h2>
+<div class="spartan-card">
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-3">
+      {% for field in form %}
+        <div class="col-md-6"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
+      {% endfor %}
+    </div>
+    <button class="btn btn-spartan mt-4">Save Settings</button>
+  </form>
+</div>
+{% endblock %}

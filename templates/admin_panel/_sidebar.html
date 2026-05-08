@@ -1,0 +1,37 @@
+{% load humanize %}
+<aside class="dash-sidebar">
+  <div class="px-4 mb-3">
+    <div class="text-spartan small text-uppercase fw-bold" style="letter-spacing:3px">{% if user.is_super_admin %}Super Admin{% else %}Admin{% endif %}</div>
+    <div class="fw-bold mt-1">{{ user.display_name }}</div>
+  </div>
+  <h6>Overview</h6>
+  <a href="{% url 'core:admin_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+
+  <h6>Members</h6>
+  <a href="{% url 'core:member_list' %}"><i class="bi bi-people"></i> All Members</a>
+  {% if user.is_super_admin or user.can_add_member %}
+    <a href="{% url 'core:member_add' %}"><i class="bi bi-person-plus"></i> Add Member</a>
+  {% endif %}
+  <a href="{% url 'core:attendance_list' %}"><i class="bi bi-clipboard-check"></i> Attendance</a>
+  <a href="{% url 'core:admin_check_in' %}"><i class="bi bi-door-open"></i> Front-Desk Check-in</a>
+
+  <h6>Plans &amp; Billing</h6>
+  <a href="{% url 'core:plan_list' %}"><i class="bi bi-tags"></i> Plans</a>
+  <a href="{% url 'core:membership_list' %}"><i class="bi bi-calendar-check"></i> Memberships</a>
+  <a href="{% url 'core:payment_list' %}"><i class="bi bi-cash-coin"></i> Payments</a>
+
+  <h6>Programs</h6>
+  <a href="{% url 'core:class_list' %}"><i class="bi bi-activity"></i> Classes</a>
+  <a href="{% url 'core:trainer_list' %}"><i class="bi bi-person-badge"></i> Trainers</a>
+
+  <h6>Engagement</h6>
+  <a href="{% url 'core:testimonial_list' %}"><i class="bi bi-chat-quote"></i> Testimonials</a>
+  <a href="{% url 'core:message_list' %}"><i class="bi bi-envelope"></i> Messages</a>
+
+  {% if user.is_super_admin %}
+    <h6>Super Admin</h6>
+    <a href="{% url 'core:staff_list' %}"><i class="bi bi-shield-lock"></i> Staff &amp; Permissions</a>
+    <a href="{% url 'core:site_settings' %}"><i class="bi bi-gear"></i> Site Settings</a>
+    <a href="/django-admin/"><i class="bi bi-database"></i> Django Admin</a>
+  {% endif %}
+</aside>

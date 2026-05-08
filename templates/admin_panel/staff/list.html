@@ -1,0 +1,49 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-1">Staff &amp; Permissions</h2>
+    <p class="text-muted mb-0">Grant granular permissions to admin accounts.</p>
+  </div>
+  <a href="{% url 'core:staff_add' %}" class="btn btn-spartan"><i class="bi bi-plus-circle"></i> Add Staff</a>
+</div>
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead><tr><th>User</th><th>Role</th><th>Permissions</th><th>Active</th><th></th></tr></thead>
+    <tbody>
+      {% for s in staff %}
+        <tr>
+          <td>
+            <div class="fw-bold">{{ s.display_name }}</div>
+            <div class="small text-muted">@{{ s.username }} · {{ s.email }}</div>
+          </td>
+          <td>
+            {% if s.is_super_admin %}<span class="status-badge status-active">Super Admin</span>
+            {% else %}<span class="status-badge status-pending">Admin</span>{% endif %}
+          </td>
+          <td>
+            {% if s.is_super_admin %}
+              <span class="perm-pill">Full access</span>
+            {% else %}
+              {% if s.can_add_member %}<span class="perm-pill">+ Member</span>{% endif %}
+              {% if s.can_edit_member %}<span class="perm-pill">Edit Member</span>{% endif %}
+              {% if s.can_delete_member %}<span class="perm-pill">Delete Member</span>{% endif %}
+              {% if s.can_manage_plans %}<span class="perm-pill">Plans</span>{% endif %}
+              {% if s.can_manage_classes %}<span class="perm-pill">Classes</span>{% endif %}
+              {% if s.can_manage_payments %}<span class="perm-pill">Payments</span>{% endif %}
+              {% if s.can_manage_testimonials %}<span class="perm-pill">Testimonials</span>{% endif %}
+            {% endif %}
+          </td>
+          <td>{% if s.is_active %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-x-circle-fill text-danger"></i>{% endif %}</td>
+          <td class="text-end">
+            <a href="{% url 'core:staff_edit' s.pk %}" class="btn btn-ghost btn-sm"><i class="bi bi-pencil"></i></a>
+            {% if s.pk != user.pk %}
+              <a href="{% url 'core:staff_delete' s.pk %}" class="btn btn-ghost btn-sm text-danger"><i class="bi bi-trash"></i></a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

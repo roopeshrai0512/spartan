@@ -1,0 +1,14 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<h2 class="mb-4">{{ title }}</h2>
+<div class="spartan-card">
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
+    {% endfor %}
+    <button class="btn btn-spartan">Save</button>
+    <a href="{% url 'core:payment_list' %}" class="btn btn-ghost">Cancel</a>
+  </form>
+</div>
+{% endblock %}

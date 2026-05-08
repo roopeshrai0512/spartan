@@ -1,0 +1,32 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Memberships</h2>
+  {% if user.is_super_admin or user.can_manage_payments %}
+    <a href="{% url 'core:membership_add' %}" class="btn btn-spartan"><i class="bi bi-plus-circle"></i> Add</a>
+  {% endif %}
+</div>
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead><tr><th>Member</th><th>Plan</th><th>Start</th><th>End</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for m in items %}
+        <tr>
+          <td>{{ m.member.display_name }}</td>
+          <td>{{ m.plan.name }}</td>
+          <td>{{ m.start_date }}</td>
+          <td>{{ m.end_date }}</td>
+          <td><span class="status-badge status-{{ m.status }}">{{ m.get_status_display }}</span></td>
+          <td class="text-end">
+            {% if m.status == 'active' and user.is_super_admin or user.can_manage_payments %}
+              <a href="{% url 'core:membership_cancel' m.pk %}" class="btn btn-sm btn-ghost">Cancel</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-calendar-x"></i>No memberships.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

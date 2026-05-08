@@ -1,0 +1,29 @@
+{% extends "admin_panel/_layout.html" %}
+{% block dash %}
+<h2 class="mb-4">Contact Messages</h2>
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead><tr><th>From</th><th>Subject</th><th>Message</th><th>When</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for m in items %}
+        <tr>
+          <td>
+            <div class="fw-bold">{{ m.name }}</div>
+            <div class="small text-muted">{{ m.email }}</div>
+          </td>
+          <td>{{ m.subject }}</td>
+          <td class="text-white-50 small">{{ m.message|truncatewords:14 }}</td>
+          <td>{{ m.created_at|date:"M d, Y H:i" }}</td>
+          <td>
+            {% if m.handled %}<span class="status-badge status-active">Handled</span>
+            {% else %}<span class="status-badge status-pending">Pending</span>{% endif %}
+          </td>
+          <td><a href="{% url 'core:message_handle' m.pk %}" class="btn btn-ghost btn-sm">Toggle</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-envelope-x"></i>No messages.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

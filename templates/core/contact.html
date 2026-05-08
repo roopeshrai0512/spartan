@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1>Get In Touch</h1>
+    <p>Questions, feedback, or ready to enlist? We're listening.</p>
+  </div>
+</section>
+
+<section class="spartan-section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        <div class="spartan-card">
+          <h3 class="mb-4">Send a message</h3>
+          <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+              </div>
+            {% endfor %}
+            <button class="btn btn-spartan">Send Message <i class="bi bi-send-fill ms-2"></i></button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="spartan-card mb-3">
+          <i class="bi bi-geo-alt-fill text-spartan fs-3"></i>
+          <h5 class="mt-2">Visit Us</h5>
+          <p class="text-white-50 mb-0">{{ site.address }}</p>
+        </div>
+        <div class="spartan-card mb-3">
+          <i class="bi bi-telephone-fill text-spartan fs-3"></i>
+          <h5 class="mt-2">Call Us</h5>
+          <p class="text-white-50 mb-0">{{ site.phone }}</p>
+        </div>
+        <div class="spartan-card mb-3">
+          <i class="bi bi-envelope-fill text-spartan fs-3"></i>
+          <h5 class="mt-2">Email Us</h5>
+          <p class="text-white-50 mb-0">{{ site.email }}</p>
+        </div>
+        <div class="spartan-card">
+          <i class="bi bi-clock-fill text-spartan fs-3"></i>
+          <h5 class="mt-2">Hours</h5>
+          <p class="text-white-50 mb-0">{{ site.hours }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

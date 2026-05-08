@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Trainers{% endblock %}
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1>Our Coaches</h1>
+    <p>Decorated athletes who've earned the right to coach you.</p>
+  </div>
+</section>
+
+<section class="spartan-section">
+  <div class="container">
+    <div class="row g-4">
+      {% for t in trainers %}
+        <div class="col-md-6 col-lg-4">
+          <div class="trainer-card">
+            <div class="trainer-photo" {% if t.photo %}style="background-image:url('{{ t.photo.url }}')"{% endif %}></div>
+            <div class="trainer-body">
+              <div class="trainer-name">{{ t.name }}</div>
+              <div class="trainer-title">{{ t.title }}</div>
+              <div class="trainer-spec">{{ t.specialty }} · {{ t.years_experience }} yrs experience</div>
+              <p class="text-white-50 small mt-3 mb-0">{{ t.bio }}</p>
+              {% if t.instagram %}<a href="{{ t.instagram }}" class="btn btn-ghost btn-sm mt-3"><i class="bi bi-instagram"></i> Follow</a>{% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

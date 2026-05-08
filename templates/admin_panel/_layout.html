@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body_class %}admin-body{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  {% include "admin_panel/_sidebar.html" %}
+  <div class="dash-content">
+    {% block dash %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
